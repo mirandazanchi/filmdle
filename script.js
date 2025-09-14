@@ -1,6 +1,5 @@
 //API Keys
-const readAccessToken = "[redacted]";
-const apiKey = "[redacted]";
+const readAccessToken = localStorage.getItem("readAccessToken");
 
 const APIoptions = {
 	method: "GET",
