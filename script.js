@@ -39,19 +39,6 @@ function addListeners() {
 	});
 }
 
-async function callAPI(url) {
-	try {
-		const response = await fetch(url, APIoptions);
-		if (!response.ok) {
-			throw new Error(`Response status: ${response.status}`);
-		}
-		const json = await response.json();
-		return json;
-	} catch (error) {
-		console.error(error.message);
-	}
-}
-
 function getKey() {
 	if (localStorage.getItem("apiKey") == null) {
 		requestKey();
@@ -66,30 +53,52 @@ function requestKey() {
 	keyModal.toggle();
 }
 
-//Choose secret movie
-const selections = chooseItem();
-const secretMovieID = randomAPI(selections[0], selections[1]); // this will be a promise that has to be awaited when referenced
-
-function chooseItem() {
-	var itemSelected = Math.floor(Math.random() * 1500); // Picks one of the top 1500 items so that the item chosen isn't too obscure
-	var page = Math.ceil(itemSelected / 20); // API returns 20 items per page
-	var indexOnPage = itemSelected % 20;
-	return [page, indexOnPage];
+//Standard API call
+async function callAPI(url) {
+	try {
+		const response = await fetch(url, APIoptions);
+		if (!response.ok) {
+			throw new Error(`Response status: ${response.status}`);
+		}
+		const json = await response.json();
+		return json;
+	} catch (error) {
+		console.error(error.message);
+	}
 }
 
-async function randomAPI(page, indexOnPage) {
+const movieDetails = async (movieID) => {
+	//gets info from the Movie Details endpoint of TMDB API
+	const baseUrl = "https://api.themoviedb.org/3/movie/";
+	const url = baseUrl + movieID;
+	const apiJSON = await callAPI(url);
+	return apiJSON;
+};
+
+//Choose secret movie
+const secretID = chooseSecret();
+const secretMovieID = secretID;
+
+function chooseSecret() {
+	const selection = chooseItem();
+	return randomAPI(selection);
+}
+
+function chooseItem() {
+	var selection = Math.floor(Math.random() * 1500); // Picks one of the top 1500 items so that the item chosen isn't too obscure
+	return selection;
+}
+
+async function randomAPI(selection) {
+	var page = Math.ceil(selection / 20); // API returns 20 items per page
+	var indexOnPage = selection % 20;
 	const url =
-		"https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=" + page;
+		"https://api.themoviedb.org/3/discover/movie?language=en-US&page=1&sort_by=vote_average.desc&without_genres=99&vote_count.gte=200&with_original_language=en&page=" +
+		page;
 	const apiJSON = await callAPI(url);
 	const result = apiJSON.results[indexOnPage];
-	if (result.original_language != "en") {
-		console.log("choosing again...");
-		const selections = chooseItem();
-		randomAPI(selections[0], selections[1]);
-	} else {
-		console.log(result);
-		return result.id;
-	}
+	console.log(result);
+	return result.id;
 }
 
 //Live guess search
@@ -105,10 +114,10 @@ const searchMovies = async (guessInputTxt) => {
 	const apiJSON = await callAPI(url);
 	const results = apiJSON.results;
 
-	renderResults(results);
+	renderSearchResults(results);
 };
 
-const renderResults = (results) => {
+const renderSearchResults = (results) => {
 	//display API results for live search
 	resultsContainer.innerHTML = "";
 	movieUnavailableTxt.style.display = "none";
@@ -120,7 +129,8 @@ const renderResults = (results) => {
 
 	const posterBaseURL = "https://image.tmdb.org/t/p/w185/";
 	filteredResults.forEach((result) => {
-		resultsContainer.innerHTML += `
+		if (result.poster_path != null) {
+			resultsContainer.innerHTML += `
      <div class="movieCard hover row" onclick="guess(${result.id})">
        <img src="${posterBaseURL}${result.poster_path}" alt="Movie poster for ${result.title}" class="movieImage col" />
 	   <div class="col">
@@ -129,6 +139,17 @@ const renderResults = (results) => {
 	   </div>
      </div>
    `;
+		} else {
+			resultsContainer.innerHTML += `
+     <div class="movieCard hover row" onclick="guess(${result.id})">
+       <img src="posterUnavailable.png" alt="Poster unavailable for ${result.title}" class="movieImage col" />
+	   <div class="col">
+       <h2 class="title">${result.title}</h2>
+       <p class="plot">${result.overview}</p>
+	   </div>
+     </div>
+   `;
+		}
 	});
 };
 
@@ -139,56 +160,100 @@ async function guess(guessID) {
 	} else {
 		const guessDetails = await movieDetails(guessID);
 		console.log(guessDetails);
-		const secretMovieDetails = await movieDetails(await secretMovieID);
-		console.log(secretMovieDetails);
-		const score = await evaluateGuess(guessDetails, secretMovieDetails);
+
+		const secretDetails = movieDetails(await secretMovieID);
+		console.log(await secretDetails);
+		const score = await evaluateGuess(guessDetails, await secretDetails);
 	}
 	clearGuess();
 }
 
-const movieDetails = async (movieID) => {
-	//gets info from the Movie Details endpoint of TMBD API
-	const baseUrl = "https://api.themoviedb.org/3/movie/";
-	const url = baseUrl + movieID;
-	const apiJSON = await callAPI(url);
-	return apiJSON;
-};
-
 const evaluateGuess = async (guessDetails, secretDetails) => {
 	//compares each item to the secret movie's detail and returns clues
 	const guessTitle = guessDetails.title;
-	const guessYear = new Date(guessDetails.release_date).getYear();
-	const guessGenres = guessDetails.genres.map((a) => a.name);
-	const guessGenreSet = new Set(guessGenres);
-	console.log(guessGenreSet);
-	const guessPopularity = guessDetails.popularity;
-	const guessBudget = guessDetails.budget;
-	const guessRuntime = guessDetails.runtime;
-	const guessAvgRating = guessDetails.vote_average;
 
-	const secretTitle = secretDetails.title;
+	var scores = {};
+
+	//Year
+	const guessYear = new Date(guessDetails.release_date).getYear();
 	const secretYear = new Date(secretDetails.release_date).getYear();
-	const secretGenres = secretDetails.genres.map((a) => a.name);
-	const secretGenreSet = new Set(secretGenres);
-	console.log(secretGenreSet);
-	const sharedGenres = secretGenreSet.intersection(guessGenreSet);
-	console.log(sharedGenres);
-	const secretPopularity = secretDetails.popularity;
+
+	if (guessYear == secretYear) {
+		scores.yearScore = "correct";
+	} else if (Math.abs(guessYear - secretYear) < 5) {
+		scores.yearScore = "close";
+	} else {
+		scores.yearScore = "wrong";
+	}
+
+	if (secretYear > guessYear) {
+		scores.yearDirection = "up";
+	} else {
+		scores.yearDirection = "down";
+	}
+
+	//Genres
+	const guessGenres = new Set(guessDetails.genres.map((a) => a.name));
+	const secretGenres = new Set(secretDetails.genres.map((a) => a.name));
+	const sharedGenres = secretGenres.intersection(guessGenres);
+	var genreScore = null;
+	if (sharedGenres.size == 0) {
+		scores.genreScore = "wrong";
+	} else if (
+		guessGenres.size == secretGenres.size &&
+		secretGenres.size == sharedGenres.size
+	) {
+		scores.genreScore = "correct";
+	} else {
+		scores.genreScore = "close";
+	}
+
+	//Popularity
+	const guessPop = guessDetails.popularity;
+	const secretPop = secretDetails.popularity;
+
+	if (guessPop == secretPop) {
+		scores.popScore = "correct";
+	} else if (Math.abs(guessPop - secretPop) < 5) {
+		scores.popScore = "close";
+	} else {
+		scores.popScore = "wrong";
+	}
+
+	if (secretPop > guessPop) {
+		scores.popDirection = "up";
+	} else {
+		scores.popDirection = "down";
+	}
+
+	//Budget
+	const guessBudget = guessDetails.budget;
 	const secretBudget = secretDetails.budget;
+	const guessBudgetDisplay = guessBudget;
+
+	if (
+		guessBudget == 0 ||
+		guessBudget == null ||
+		secretBudget == 0 ||
+		secretBudget == null
+	) {
+		scores.budgetScore = null;
+	} else {
+		//scores.budgetScore ;
+	}
+
+	//Runtime
+	const guessRuntime = guessDetails.runtime;
 	const secretRuntime = secretDetails.runtime;
+
+	//Rating
+	const guessAvgRating = guessDetails.vote_average;
 	const secretAvgRating = secretDetails.vote_average;
 
-	if (sharedGenres.size == 0) {
-		console.log("Genre Red");
-	} else if (
-		guessGenreSet.size == secretGenreSet.size &&
-		secretGenreSet.size == sharedGenres.size
-	) {
-		console.log("Genre Green");
-	} else {
-		console.log("Genre Yellow");
-	}
+	console.log(scores);
 };
+
+function renderGuessScore() {}
 
 function clearGuess() {
 	// clear search box and previous search results
