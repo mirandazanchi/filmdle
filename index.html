@@ -11,6 +11,9 @@
 			integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
 			crossorigin="anonymous" />
 		<style>
+			.search {
+				padding: 20px;
+			}
 			.movieCard {
 				padding: 20px;
 				border-radius: 5px;
@@ -61,8 +64,12 @@
 							<a class="nav-link active" aria-current="page" href="#">Rules</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link active" aria-current="page" href="#"
-								>Settings</a
+							<a
+								class="nav-link"
+								aria-current="page"
+								data-bs-toggle="modal"
+								data-bs-target="#apiKeyModal"
+								>API Settings</a
 							>
 						</li>
 					</ul>
@@ -74,7 +81,7 @@
 			<div>
 				<div class="container">
 					<div class="container">
-						<div class="input-group mb-3">
+						<div class="input-group mb-3 search">
 							<input
 								autocomplete="off"
 								class="form-control border-end-0"
@@ -100,22 +107,31 @@
 						<p id="searchFailText"></p>
 					</div>
 					<div class="">
-						<table class="table">
-							<tr>
-								<th>Guess #</th>
-								<th>Title</th>
-								<th>Year</th>
-								<th>Genre</th>
-								<th>Popularity</th>
-								<th>Budget</th>
-								<th>Runtime</th>
-								<th>Average Rating</th>
-							</tr>
-							<tr>
-								<th>1 of 10</th>
-								<td></td>
-							</tr>
+						<table class="table" id="guessTable">
+							<thead>
+								<tr>
+									<th>Guess #</th>
+									<th>Poster</th>
+									<th>Title</th>
+									<th>Year</th>
+									<th>Genre</th>
+									<th>Popularity</th>
+									<th>Runtime</th>
+									<th>Average Rating</th>
+								</tr>
+							</thead>
+							<tbody id="guessTableBody"></tbody>
 						</table>
+					</div>
+				</div>
+				<div class="container">
+					<p>Stuck? Use a hint:</p>
+					<div class="row">
+						<div class="col btn" id="hintTopBilled">
+							Reveal Top Billed Actor
+						</div>
+						<div class="col btn" id="hintDirector">Reveal Director</div>
+						<div class="col btn" id="hintTagline">Reveal Tagline</div>
 					</div>
 				</div>
 			</div>
@@ -205,7 +221,7 @@
 								type="button"
 								class="btn btn-primary"
 								id="btnSubmitKey"
-								onclick="">
+								onclick="sendAPIKey()">
 								Submit
 							</button>
 						</div>
