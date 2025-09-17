@@ -36,13 +36,27 @@ function addListeners() {
 	});
 }
 
-function getKey() {
-	if (localStorage.getItem("readAccessToken") == null) {
+async function getKey() {
+	if (readAccessToken == null) {
 		const keyModal = new bootstrap.Modal(
 			document.getElementById("apiKeyModal"),
 			{}
 		);
 		keyModal.toggle();
+	} else {
+		const url = "https://api.themoviedb.org/3/authentication";
+		var testLocalStorage = await fetch(url, {
+			method: "GET",
+			headers: {
+				accept: "application/json",
+				Authorization: "Bearer " + readAccessToken,
+			},
+		});
+		if (!testLocalStorage.ok) {
+			localStorage.setItem("readAccessToken", null);
+			readAccessToken = null;
+			getKey();
+		}
 	}
 }
 
