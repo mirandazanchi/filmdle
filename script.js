@@ -12,18 +12,8 @@ const APIoptions = {
 //Onload
 function loadHandler() {
 	addListeners();
-	//getKey();
-	//chooseSecret();
+	getKey();
 }
-
-// let userReadAccessToken;
-// const APIoptions = {
-// 	method: "GET",
-// 	headers: {
-// 		accept: "application/json",
-// 		Authorization: "Bearer " + userReadAccessToken,
-// 	},
-// };
 
 function addListeners() {
 	inputGuess.addEventListener("keypress", function (event) {
@@ -37,26 +27,50 @@ function addListeners() {
 		const guessInputTxt = event.target.value.trim().toLowerCase();
 		searchMovies(guessInputTxt);
 	});
+
+	inputAPIKey.addEventListener("keypress", function (event) {
+		if (event.key === "Enter") {
+			event.preventDefault();
+			document.getElementById("btnSubmitKey").click();
+		}
+	});
 }
 
 function getKey() {
-	if (localStorage.getItem("apiKey") == null) {
-		requestKey();
-	} else return localStorage.getItem("apiKey");
+	if (localStorage.getItem("readAccessToken") == null) {
+		const keyModal = new bootstrap.Modal(
+			document.getElementById("apiKeyModal"),
+			{}
+		);
+		keyModal.toggle();
+	}
 }
 
-function requestKey() {
-	const keyModal = new bootstrap.Modal(
-		document.getElementById("apiKeyModal"),
-		{}
-	);
-	keyModal.toggle();
-}
+async function sendAPIKey() {
+	var input = document.getElementById("inputAPIKey");
+	var testAccessToken = input.value;
+	const alertHolder = document.getElementById("alertHolder");
+	alertHolder.innerHTML = "";
 
-function sendAPIKey() {
-	const input = document.getElementById("inputAPIKey");
-	readAccessToken = localStorage.setItem("readAccessToken", input.value);
-	clearAPIKeyInput();
+	const url = "https://api.themoviedb.org/3/authentication";
+
+	var testResponse = await fetch(url, {
+		method: "GET",
+		headers: {
+			accept: "application/json",
+			Authorization: "Bearer " + testAccessToken,
+		},
+	});
+
+	if (testResponse.ok) {
+		localStorage.setItem("readAccessToken", testAccessToken);
+		location.reload();
+	} else {
+		alertHolder.innerHTML = `<div class="alert alert-danger" role="alert">
+			  <div>Authentication failed - please try again</div>
+			</div>`;
+		clearAPIKeyInput();
+	}
 }
 
 //Standard API call
