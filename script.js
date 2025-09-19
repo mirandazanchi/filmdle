@@ -140,6 +140,10 @@ async function randomAPI(selection) {
 		resultID +
 		"?append_to_response=credits";
 	const detailsJSON = await callAPI(detailsURL);
+
+	addHints(detailsJSON);
+	const secretHolder = document.getElementById("secretHolder");
+	secretHolder.innerHTML = `Title: ${detailsJSON.title}`;
 	console.log(detailsJSON);
 	return detailsJSON;
 }
@@ -266,6 +270,7 @@ function compareValues(guess, secret, range) {
 	var results = {};
 	if (guess == secret) {
 		results.correctness = "correct";
+		results.direction = "correct";
 	} else if (Math.abs(guess - secret) < range) {
 		results.correctness = "close";
 	} else {
@@ -274,7 +279,7 @@ function compareValues(guess, secret, range) {
 
 	if (secret > guess) {
 		results.direction = "up";
-	} else {
+	} else if (secret < guess) {
 		results.direction = "down";
 	}
 	return results;
@@ -311,6 +316,9 @@ function renderGuessScore(scores, guessDetails) {
 								<td>${scores.runtime.correctness} - ${scores.runtime.direction}</td>
 								<td>${scores.rating.correctness} - ${scores.rating.direction}</td>
 							</tr>`;
+	if (guessNumber == 10) {
+		revealSecret();
+	}
 }
 
 function clearGuess() {
@@ -326,18 +334,36 @@ function clearAPIKeyInput() {
 
 function showWin() {
 	console.log("you won!");
+	revealSecret();
 }
 
-function addHints() {
+function addHints(details) {
 	const hintActor = document.getElementById("hintTopBilled");
 	const hintDirector = document.getElementById("hintDirector");
 	const hintTagline = document.getElementById("hintTagline");
 
-	const actor = secretDetails.credits.cast[0].name;
-	const director = secretDetails.credits.crew[0].name; //need to filter crew for director credit
-	const tagline = secretDetails.tagline;
+	const actor = details.credits.cast[0].name;
+	const director = details.credits.crew[0].name; //need to filter crew for director credit
+	const tagline = details.tagline;
 
-	console.log(actor, tagline);
+	hintActor.addEventListener("click", () => {
+		hintsUsed++;
+		hintActor.innerHTML = actor;
+	});
+
+	hintDirector.addEventListener("click", () => {
+		hintsUsed++;
+		hintDirector.innerHTML = director;
+	});
+
+	hintTagline.addEventListener("click", () => {
+		hintsUsed++;
+		hintTagline.innerHTML = tagline;
+	});
 }
 
-function revealSecret() {}
+function revealSecret() {
+	const secretModalElement = document.getElementById("secretRevealModal");
+	const secretModal = new bootstrap.Modal(secretModalElement, {});
+	secretModal.toggle();
+}
