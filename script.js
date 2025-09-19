@@ -343,7 +343,9 @@ function addHints(details) {
 	const hintTagline = document.getElementById("hintTagline");
 
 	const actor = details.credits.cast[0].name;
-	const director = details.credits.crew[0].name; //need to filter crew for director credit
+	const director = details.credits.crew.filter(
+		(crew) => crew.job == "Director"
+	)[0].name;
 	const tagline = details.tagline;
 
 	hintActor.addEventListener("click", () => {
