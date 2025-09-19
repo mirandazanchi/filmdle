@@ -49,16 +49,37 @@
 			.close {
 				background-color: yellow;
 			}
+			.logo {
+				height: 2em;
+			}
+			.attribute {
+				height: 2em;
+				border-radius: 5px;
+				outline: auto;
+			}
+			.indicator {
+				height: 1.5em;
+			}
 		</style>
 	</head>
 	<body onload="loadHandler()">
 		<header>
-			<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+			<nav
+				class="navbar navbar-expand-lg bg-primary align-middle"
+				data-bs-theme="dark">
 				<div class="container-fluid">
-					<a class="navbar-brand">Filmdle</a>
+					<a class="navbar-brand"
+						><span><img src="clapperboardFavicon.png" class="logo" /></span
+						><span>Filmdle</span></a
+					>
 					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 						<li class="nav-item">
-							<a class="nav-link active" aria-current="page" href="#"
+							<a
+								class="nav-link"
+								data-bs-target="#rulesModal"
+								data-bs-toggle="modal"
+								aria-current="page"
+								href="#"
 								>How to Play</a
 							>
 						</li>
@@ -117,11 +138,23 @@
 				<div class="container">
 					<p>Stuck? Use a hint:</p>
 					<div class="row">
-						<div class="col btn" id="hintTopBilled">
+						<div class="col btn btn-outline-secondary" id="hintTopBilled">
 							Reveal Top Billed Actor
 						</div>
-						<div class="col btn" id="hintDirector">Reveal Director</div>
-						<div class="col btn" id="hintTagline">Reveal Tagline</div>
+						<div class="col btn btn-outline-secondary" id="hintDirector">
+							Reveal Director
+						</div>
+						<div class="col btn btn-outline-secondary" id="hintTagline">
+							Reveal Tagline
+						</div>
+					</div>
+					<div class="row">
+						<div
+							class="btn btn-outline-primary"
+							id="btnGiveUp"
+							onclick="giveUp()">
+							Give Up
+						</div>
 					</div>
 				</div>
 			</div>
@@ -129,7 +162,7 @@
 
 		<footer class="footer">
 			<div class="d-flex justify-content-center">
-				<span class="row">
+				<span>
 					This product uses the TMDB API but is not endorsed or certified by
 					TMDB.
 
@@ -139,7 +172,7 @@
 							class="tmdbLogo" />
 					</a>
 				</span>
-				<span class="row">
+				<span>
 					<a
 						target="_blank"
 						href="https://icons8.com/icon/FoDhNGl8I5hv/clapperboard"
@@ -230,6 +263,60 @@
 					</div>
 					<div class="modal-body">
 						<div id="secretHolder"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- HOW TO PLAY MODAL -->
+		<div
+			class="modal fade"
+			id="rulesModal"
+			tabindex="-1"
+			aria-labelledby="rulesModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title fs-5">How to Play</h1>
+						<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="container">
+							<p>
+								Your goal is to guess the secret movie. With each guess, clues
+								will be revealed.
+							</p>
+							<p>
+								In the example below, the <strong>year</strong> is correct. The
+								<strong>genres</strong> are close - the secret movie and the
+								guess have at least one genre in common, but the genres are not
+								exactly the same.
+							</p>
+						</div>
+						<div class="container">
+							<span class="attribute"
+								><span class="row">Year</span
+								><span class="row">
+									2002
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="25"
+										height="25"
+										fill="currentColor"
+										class="bi bi-arrow-up-short indicator"
+										viewBox="0 0 16 16">
+										<path
+											fill-rule="evenodd"
+											d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5" />
+									</svg>
+								</span>
+							</span>
+						</div>
 					</div>
 				</div>
 			</div>

@@ -142,9 +142,10 @@ async function randomAPI(selection) {
 	const detailsJSON = await callAPI(detailsURL);
 
 	addHints(detailsJSON);
+
 	const secretHolder = document.getElementById("secretHolder");
 	secretHolder.innerHTML = `Title: ${detailsJSON.title}`;
-	console.log(detailsJSON);
+
 	return detailsJSON;
 }
 
@@ -294,7 +295,8 @@ function renderGuessScore(scores, guessDetails) {
 	}
 	const genreText = guessDetails.genres.map((a) => a.name).join(", ");
 	const posterBaseURL = "https://image.tmdb.org/t/p/w185/";
-	guessTable.innerHTML += `	<tr>
+	var innerHTML = guessTable.innerHTML;
+	var guessRender = `	<tr>
 								<th>${guessNumber} of 10</td>
 								<td><img src="${posterBaseURL}${
 		guessDetails.poster_path
@@ -316,6 +318,8 @@ function renderGuessScore(scores, guessDetails) {
 								<td>${scores.runtime.correctness} - ${scores.runtime.direction}</td>
 								<td>${scores.rating.correctness} - ${scores.rating.direction}</td>
 							</tr>`;
+
+	guessTable.innerHTML = guessRender + innerHTML;
 	if (guessNumber == 10) {
 		revealSecret();
 	}
@@ -348,10 +352,14 @@ function addHints(details) {
 	)[0].name;
 	const tagline = details.tagline;
 
-	hintActor.addEventListener("click", () => {
-		hintsUsed++;
-		hintActor.innerHTML = actor;
-	});
+	if (actor != null) {
+		hintActor.addEventListener("click", () => {
+			hintsUsed++;
+			hintActor.innerHTML = actor;
+		});
+	} else {
+		hintActor.prop.disabled = true;
+	}
 
 	hintDirector.addEventListener("click", () => {
 		hintsUsed++;
@@ -368,4 +376,18 @@ function revealSecret() {
 	const secretModalElement = document.getElementById("secretRevealModal");
 	const secretModal = new bootstrap.Modal(secretModalElement, {});
 	secretModal.toggle();
+}
+
+function giveUp() {
+	guessNumber = 12;
+
+	const hintActor = document.getElementById("hintTopBilled");
+	const hintDirector = document.getElementById("hintDirector");
+	const hintTagline = document.getElementById("hintTagline");
+
+	hintActor.click();
+	hintDirector.click();
+	hintTagline.click();
+
+	revealSecret();
 }
