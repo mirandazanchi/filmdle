@@ -141,6 +141,7 @@ async function randomAPI(selection) {
 		"?append_to_response=credits";
 	const detailsJSON = await callAPI(detailsURL);
 
+	console.log(detailsJSON);
 	addHints(detailsJSON);
 
 	const secretHolder = document.getElementById("secretHolder");
@@ -218,6 +219,15 @@ async function guess(guessID) {
 const evaluateGuess = async (guessDetails, secretDetails) => {
 	if (guessDetails.id == (await secretDetails.id)) {
 		showWin();
+		guessNumber = 12;
+		var scores = {
+			genre: { correctness: "correct" },
+			popularity: { correctness: "correct", direction: "correct" },
+			rating: { correctness: "correct", direction: "correct" },
+			runtime: { correctness: "correct", direction: "correct" },
+			year: { correctness: "correct", direction: "correct" },
+		};
+		return scores;
 	} else {
 		//compares each item to the secret movie's detail and returns clues
 		const guessTitle = guessDetails.title;
@@ -352,7 +362,7 @@ function addHints(details) {
 	)[0].name;
 	const tagline = details.tagline;
 
-	if (actor != null) {
+	if (actor != null && actor != "") {
 		hintActor.addEventListener("click", () => {
 			hintsUsed++;
 			hintActor.innerHTML = actor;
@@ -361,15 +371,23 @@ function addHints(details) {
 		hintActor.prop.disabled = true;
 	}
 
-	hintDirector.addEventListener("click", () => {
-		hintsUsed++;
-		hintDirector.innerHTML = director;
-	});
+	if (director != null && director != "") {
+		hintDirector.addEventListener("click", () => {
+			hintsUsed++;
+			hintDirector.innerHTML = director;
+		});
+	} else {
+		hintDirector.prop.disabled = true;
+	}
 
-	hintTagline.addEventListener("click", () => {
-		hintsUsed++;
-		hintTagline.innerHTML = tagline;
-	});
+	if (tagline != null && tagline != "") {
+		hintTagline.addEventListener("click", () => {
+			hintsUsed++;
+			hintTagline.innerHTML = tagline;
+		});
+	} else {
+		hintTagline.prop.disabled = true;
+	}
 }
 
 function revealSecret() {
