@@ -152,7 +152,6 @@ async function randomAPI(selection) {
 
 //Live guess search
 const resultsContainer = document.getElementById("searchResults");
-const movieUnavailableTxt = document.getElementById("searchFailText");
 
 const searchMovies = async (guessInputTxt) => {
 	//run API call for text in search box
@@ -169,7 +168,6 @@ const searchMovies = async (guessInputTxt) => {
 const renderSearchResults = (results) => {
 	//display API results for live search
 	resultsContainer.innerHTML = "";
-	movieUnavailableTxt.style.display = "none";
 
 	//don't show obscure search results
 	const filteredResults = results.filter(
@@ -210,6 +208,8 @@ async function guess(guessID) {
 		console.log(guessDetails);
 		const score = await evaluateGuess(guessDetails, await secretDetails);
 		renderGuessScore(score, guessDetails);
+		const guessesMadeTxt = document.getElementById("guessesMade");
+		guessesMadeTxt.innerHTML = `Guesses Made: ${guessNumber}/10`;
 	} else {
 		console.log("guess max reached");
 	}
