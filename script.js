@@ -36,6 +36,8 @@ function addListeners() {
 	});
 }
 
+const posterBaseURL = "https://image.tmdb.org/t/p/w185/";
+
 async function getKey() {
 	if (readAccessToken == null) {
 		const keyModal = new bootstrap.Modal(
@@ -110,6 +112,7 @@ async function movieDetails(movieID) {
 }
 
 var guessNumber = 0;
+var gameEnded = false;
 var hintsUsed = 0;
 
 //Choose secret movie
@@ -145,7 +148,53 @@ async function randomAPI(selection) {
 	addHints(detailsJSON);
 
 	const secretHolder = document.getElementById("secretHolder");
-	secretHolder.innerHTML = `Title: ${detailsJSON.title}`;
+
+	if (detailsJSON.release_date == null || detailsJSON.release_date == "") {
+		var secretYear = null;
+	} else {
+		var secretYear = new Date(detailsJSON.release_date).getFullYear();
+	}
+	const secretGenreText = detailsJSON.genres
+		.map((a) => a.name)
+		.sort()
+		.join(", ");
+
+	var secretDisplay = `	<div class = "row container">
+								<p id="guessesAndHints"></p>
+							</div>
+							<div class="row container guess">
+								<img
+									src="${posterBaseURL}${detailsJSON.poster_path}"
+									alt="Movie poster for ${detailsJSON.title}"
+									class="movieImage col" />
+								<span class="col">
+									<span class="row"><h2 class="title">${detailsJSON.title}</h2></span>
+									<span class="row">
+										<span class="col-auto attribute">
+											Year <br>
+											${secretYear ?? "Unknown"}
+										</span>
+										<span class="col-auto attribute text-nowrap">
+											Genre<br />
+											${secretGenreText ?? "Unknown"}
+										</span>
+										<span class="col attribute">
+											Popularity<br />
+											${detailsJSON.popularity.toFixed(1) ?? ""}
+										</span>
+										<span class="col attribute">
+											Runtime<br />
+											${detailsJSON.runtime ?? ""} minutes
+										</span>
+										<span class="col attribute">
+											Average Rating <br>
+											${detailsJSON.vote_average.toFixed(1) ?? ""}/10
+										</span>
+									</span>
+								</span>
+							</div>`;
+
+	secretHolder.innerHTML = secretDisplay;
 
 	return detailsJSON;
 }
@@ -174,7 +223,6 @@ const renderSearchResults = (results) => {
 		(result) => result.popularity > 1 && result.original_language == "en"
 	);
 
-	const posterBaseURL = "https://image.tmdb.org/t/p/w185/";
 	filteredResults.forEach((result) => {
 		if (result.poster_path != null) {
 			resultsContainer.innerHTML += `
@@ -201,9 +249,9 @@ const renderSearchResults = (results) => {
 };
 
 async function guess(guessID) {
-	guessNumber++;
-	if (guessNumber < 11) {
-		//max 10 guesses
+	if (guessNumber < 11 && gameEnded == false) {
+		//max 10 guesses, cannot guess after give up or win
+		guessNumber++;
 		const guessDetails = await movieDetails(guessID);
 		console.log(guessDetails);
 		const score = await evaluateGuess(guessDetails, await secretDetails);
@@ -219,7 +267,7 @@ async function guess(guessID) {
 const evaluateGuess = async (guessDetails, secretDetails) => {
 	if (guessDetails.id == (await secretDetails.id)) {
 		showWin();
-		guessNumber = 12;
+		gameEnded = true;
 		var scores = {
 			genre: { correctness: "correct" },
 			popularity: { correctness: "correct", direction: "correct" },
@@ -315,7 +363,7 @@ function renderGuessScore(scores, guessDetails) {
 		.map((a) => a.name)
 		.sort()
 		.join(", ");
-	const posterBaseURL = "https://image.tmdb.org/t/p/w185/";
+
 	var innerHTML = guessTable.innerHTML;
 
 	var guessRender = `	<div class="row container guess">
@@ -433,13 +481,18 @@ function removeArticle(string) {
 }
 
 function revealSecret() {
+	document.getElementById(
+		"guessesAndHints"
+	).innerHTML = `You made ${guessNumber} guesses and used ${hintsUsed} hints`;
 	const secretModalElement = document.getElementById("secretRevealModal");
 	const secretModal = new bootstrap.Modal(secretModalElement, {});
 	secretModal.toggle();
 }
 
 function giveUp() {
-	guessNumber = 12;
+	gameEnded = true;
+
+	revealSecret();
 
 	const hintActor = document.getElementById("hintTopBilled");
 	const hintDirector = document.getElementById("hintDirector");
@@ -448,6 +501,4 @@ function giveUp() {
 	hintActor.click();
 	hintDirector.click();
 	hintTagline.click();
-
-	revealSecret();
 }
