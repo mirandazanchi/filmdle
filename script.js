@@ -394,7 +394,7 @@ function addHints(details) {
 			hintActor.innerHTML = actor;
 		});
 	} else {
-		hintActor.prop.disabled = true;
+		hintActor.disabled = true;
 	}
 
 	if (director != null && director != "") {
@@ -403,7 +403,7 @@ function addHints(details) {
 			hintDirector.innerHTML = director;
 		});
 	} else {
-		hintDirector.prop.disabled = true;
+		hintDirector.disabled = true;
 	}
 
 	if (tagline != null && tagline != "") {
@@ -412,7 +412,7 @@ function addHints(details) {
 			hintTagline.innerHTML = tagline;
 		});
 	} else {
-		hintTagline.prop.disabled = true;
+		hintTagline.disabled = true;
 	}
 }
 

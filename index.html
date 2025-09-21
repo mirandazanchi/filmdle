@@ -39,20 +39,26 @@
 				width: 1.5em;
 			}
 			.wrong {
-				background-color: red;
+				background-color: #ed665c;
+				outline-color: #e94135 !important;
+				outline-width: 1px;
+				outline: solid;
 			}
 			.correct {
-				background-color: green;
+				background-color: #a5d46a;
+				outline-color: #95cd51 !important;
+				outline: solid;
 			}
 			.close {
-				background-color: yellow;
+				background-color: #ffff80;
+				outline-color: #ffff5c !important;
+				outline: solid;
 			}
 			.logo {
 				height: 2em;
 			}
 			.attribute {
 				border-radius: 5px;
-				outline: auto;
 				box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 				text-align: center;
 				padding: 2%;
@@ -60,6 +66,8 @@
 				justify-content: center;
 				align-items: center;
 				min-width: 100px;
+				color: black;
+				text-shadow: white 1px;
 			}
 			.indicator {
 				height: 1.5em;
@@ -74,6 +82,9 @@
 			}
 			main {
 				min-height: 100vh;
+			}
+			.hintButton {
+				margin: 10px;
 			}
 		</style>
 	</head>
@@ -137,19 +148,25 @@
 				<div class="container">
 					<p>Stuck? Use a hint:</p>
 					<div class="row">
-						<div class="col btn btn-outline-secondary" id="hintTopBilled">
+						<button
+							class="col btn btn-outline-secondary hintButton"
+							id="hintTopBilled">
 							Reveal Top Billed Actor
-						</div>
-						<div class="col btn btn-outline-secondary" id="hintDirector">
+						</button>
+						<button
+							class="col btn btn-outline-secondary hintButton"
+							id="hintDirector">
 							Reveal Director
-						</div>
-						<div class="col btn btn-outline-secondary" id="hintTagline">
+						</button>
+						<button
+							class="col btn btn-outline-secondary hintButton"
+							id="hintTagline">
 							Reveal Tagline
-						</div>
+						</button>
 					</div>
 					<div class="row">
 						<div
-							class="btn btn-outline-primary"
+							class="btn btn-outline-primary hintButton"
 							id="btnGiveUp"
 							onclick="giveUp()">
 							Give Up
@@ -318,7 +335,7 @@
 									<span class="row"><h2 class="title">Pulp Fiction</h2></span>
 									<span class="row">
 										<span class="col-auto attribute correct"
-											>Year<br />1994 ^</span
+											>Year<br />1994</span
 										>
 										<span class="col-auto attribute close text-nowrap">
 											Genre<br />
@@ -326,17 +343,49 @@
 										>
 									</span>
 									<span class="row">
-										<span class="col attribute">
+										<span class="col attribute wrong">
 											Popularity<br />
-											19.7 ^</span
-										>
-										<span class="col attribute">
+											19.7
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="16"
+												height="16"
+												fill="currentColor"
+												class="bi bi-arrow-up-short indicator"
+												viewBox="0 0 16 16">
+												<path
+													fill-rule="evenodd"
+													d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5" />
+											</svg>
+										</span>
+										<span class="col attribute close">
 											Runtime<br />
-											154 minutes ^</span
-										>
-										<span class="col attribute">
-											Average Rating <br />8.5/10 ^</span
-										>
+											154 minutes
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="16"
+												height="16"
+												fill="currentColor"
+												class="bi bi-arrow-down-short indicator"
+												viewBox="0 0 16 16">
+												<path
+													fill-rule="evenodd"
+													d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4" />
+											</svg>
+										</span>
+										<span class="col attribute close">
+											Average Rating <br />8.5/10<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="16"
+												height="16"
+												fill="currentColor"
+												class="bi bi-arrow-up-short indicator"
+												viewBox="0 0 16 16">
+												<path
+													fill-rule="evenodd"
+													d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5" />
+											</svg>
+										</span>
 									</span>
 								</span>
 							</div>
