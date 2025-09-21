@@ -313,7 +313,10 @@ function renderGuessScore(scores, guessDetails) {
 	} else {
 		var guessYear = new Date(guessDetails.release_date).getFullYear();
 	}
-	const genreText = guessDetails.genres.map((a) => a.name).join(", ");
+	const genreText = guessDetails.genres
+		.map((a) => a.name)
+		.sort()
+		.join(", ");
 	const posterBaseURL = "https://image.tmdb.org/t/p/w185/";
 	var innerHTML = guessTable.innerHTML;
 
