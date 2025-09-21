@@ -384,10 +384,11 @@ function addHints(details) {
 	const hintTagline = document.getElementById("hintTagline");
 
 	const title = details.title;
-	const actor = details.credits.cast[0].name;
-	const director = details.credits.crew.filter(
-		(crew) => crew.job == "Director"
-	)[0].name;
+	const act = details.credits.cast[0] ?? "";
+	const actor = act.name ?? "";
+	const dir =
+		details.credits.crew.filter((crew) => crew.job == "Director")[0] ?? "";
+	const director = dir.name;
 
 	//Censor tagline if it includes the title of the secret movie
 	const originalTagline = details.tagline;
