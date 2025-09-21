@@ -391,12 +391,13 @@ function addHints(details) {
 	const director = dir.name;
 
 	//Censor tagline if it includes the title of the secret movie
+	const censorText = "***";
 	const originalTagline = details.tagline;
 	var tagline = "";
 	const titleRegex = new RegExp(title, "gi");
 	const titleRegexNoArts = new RegExp(removeArticle(title), "gi");
-	var tagline = originalTagline.replaceAll(titleRegex, "***");
-	var tagline = tagline.replaceAll(titleRegexNoArts, "***");
+	var tagline = originalTagline.replaceAll(titleRegex, censorText);
+	var tagline = tagline.replaceAll(titleRegexNoArts, censorText);
 
 	//Add listeners to each button to reveal the hint, disable buttons if the hint field is null or blank
 	if (actor != null && actor != "") {
