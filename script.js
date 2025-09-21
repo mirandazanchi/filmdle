@@ -296,8 +296,18 @@ function compareValues(guess, secret, range) {
 	return results;
 }
 
+const upIndicator = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up-short indicator" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5"/>
+</svg>`;
+const downIndicator = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-short indicator" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4"/>
+</svg>`;
+const correctIndicator = ``;
+const nullIndicator = ``;
+const undefinedIndicator = ``;
+
 function renderGuessScore(scores, guessDetails) {
-	const guessTable = document.getElementById("guessTableBody");
+	const guessTable = document.getElementById("guessContainer");
 	if (guessDetails.release_date == null || guessDetails.release_date == "") {
 		var guessYear = null;
 	} else {
@@ -306,28 +316,44 @@ function renderGuessScore(scores, guessDetails) {
 	const genreText = guessDetails.genres.map((a) => a.name).join(", ");
 	const posterBaseURL = "https://image.tmdb.org/t/p/w185/";
 	var innerHTML = guessTable.innerHTML;
-	var guessRender = `	<tr>
-								<th>${guessNumber} of 10</td>
-								<td><img src="${posterBaseURL}${
-		guessDetails.poster_path
-	}" alt="Movie poster for ${guessDetails.title}"/</td>
-								<td>${guessDetails.title ?? ""}</td>
-								<td class="${scores.year.correctness}">${guessYear ?? "Unknown"}</td>
-								<td>${genreText ?? "Unknown"}</td>
-								<td>${guessDetails.popularity.toFixed(1) ?? ""}</td>
-								<td>${guessDetails.runtime ?? "Unknown"} minutes</td>
-								<td>${guessDetails.vote_average.toFixed(1) ?? ""}/10</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td>${scores.year.correctness} - ${scores.year.direction}</td>
-								<td>${scores.genre.correctness}</td>
-								<td>${scores.popularity.correctness} - ${scores.popularity.direction}</td>
-								<td>${scores.runtime.correctness} - ${scores.runtime.direction}</td>
-								<td>${scores.rating.correctness} - ${scores.rating.direction}</td>
-							</tr>`;
+
+	var guessRender = `	<div class="row container guess">
+								<img
+									src="${posterBaseURL}${guessDetails.poster_path}"
+									alt="Movie poster for ${guessDetails.title}"
+									class="movieImage col" />
+								<span class="col">
+									<span class="row"><h2 class="title">${guessDetails.title}</h2></span>
+									<span class="row">
+										<span class="col-auto attribute ${scores.year.correctness}">
+											Year <br>
+											${guessYear ?? "Unknown"}${eval(scores.year.direction + "Indicator")}
+										</span>
+										<span class="col-auto attribute text-nowrap ${scores.genre.correctness}">
+											Genre<br />
+											${genreText ?? "Unknown"}
+										</span>
+										<span class="col attribute ${scores.popularity.correctness}">
+											Popularity<br />
+											${guessDetails.popularity.toFixed(1) ?? ""}${eval(
+		scores.popularity.direction + "Indicator"
+	)}
+										</span>
+										<span class="col attribute ${scores.runtime.correctness}">
+											Runtime<br />
+											${guessDetails.runtime ?? ""} minutes${eval(
+		scores.runtime.direction + "Indicator"
+	)}
+										</span>
+										<span class="col attribute ${scores.rating.correctness}">
+											Average Rating <br>
+											${guessDetails.vote_average.toFixed(1) ?? ""}/10${eval(
+		scores.rating.direction + "Indicator"
+	)}
+										</span>
+									</span>
+								</span>
+							</div>`;
 
 	guessTable.innerHTML = guessRender + innerHTML;
 	if (guessNumber == 10) {

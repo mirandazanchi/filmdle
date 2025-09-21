@@ -26,6 +26,7 @@
 				width: auto;
 				max-height: 200px;
 				max-width: 200px;
+				aspect-ratio: 2/3;
 			}
 			.footer {
 				position: absolute;
@@ -53,12 +54,26 @@
 				height: 2em;
 			}
 			.attribute {
-				height: 2em;
 				border-radius: 5px;
 				outline: auto;
+				box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+				text-align: center;
+				padding: 2%;
+				margin: 5px;
+				justify-content: center;
+				align-items: center;
+				min-width: 100px;
 			}
 			.indicator {
 				height: 1.5em;
+			}
+			#searchResults {
+				background-color: white;
+				position: absolute;
+				z-index: 2;
+			}
+			.guess {
+				margin: 5px;
 			}
 		</style>
 	</head>
@@ -114,26 +129,10 @@
 								</svg>
 							</button>
 						</div>
-						<div id="searchResults" class="dropdown"></div>
+						<div id="searchResults" class="dropdown container"></div>
 						<p id="searchFailText"></p>
 					</div>
-					<div class="">
-						<table class="table" id="guessTable">
-							<thead>
-								<tr>
-									<th>Guess #</th>
-									<th>Poster</th>
-									<th>Title</th>
-									<th>Year</th>
-									<th>Genre</th>
-									<th>Popularity</th>
-									<th>Runtime</th>
-									<th>Average Rating</th>
-								</tr>
-							</thead>
-							<tbody id="guessTableBody"></tbody>
-						</table>
-					</div>
+					<div class="container" id="guessContainer"></div>
 				</div>
 				<div class="container">
 					<p>Stuck? Use a hint:</p>
@@ -264,13 +263,18 @@
 					<div class="modal-body">
 						<div id="secretHolder"></div>
 					</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary" onclick="location.reload()">
+							Play Again
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
 
 		<!-- HOW TO PLAY MODAL -->
 		<div
-			class="modal fade"
+			class="modal fade modal-lg"
 			id="rulesModal"
 			tabindex="-1"
 			aria-labelledby="rulesModalLabel"
@@ -295,27 +299,47 @@
 								In the example below, the <strong>year</strong> is correct. The
 								<strong>genres</strong> are close - the secret movie and the
 								guess have at least one genre in common, but the genres are not
-								exactly the same.
+								exactly the same. The <strong>runtime</strong> is wrong - it is
+								higher than the secret movie's runtime by more than 15 minutes.
 							</p>
-						</div>
-						<div class="container">
-							<span class="attribute"
-								><span class="row">Year</span
-								><span class="row">
-									2002
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="25"
-										height="25"
-										fill="currentColor"
-										class="bi bi-arrow-up-short indicator"
-										viewBox="0 0 16 16">
-										<path
-											fill-rule="evenodd"
-											d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5" />
-									</svg>
+							<p>
+								Year: 5 years<br />
+								Runtime: 15 minutes<br />
+								Rating: 1 point <br />
+								Popularity: 5 points
+							</p>
+
+							<div class="row container">
+								<img
+									src="https://www.themoviedb.org/t/p/w1280/vQWk5YBFWF4bZaofAbv0tShwBvQ.jpg"
+									alt="Movie poster for Pulp Fiction"
+									class="movieImage col" />
+								<span class="col">
+									<span class="row"><h2 class="title">Pulp Fiction</h2></span>
+									<span class="row">
+										<span class="col-auto attribute correct"
+											>Year<br />1994 ^</span
+										>
+										<span class="col-auto attribute close text-nowrap">
+											Genre<br />
+											Thriller, Crime, Comedy, Drama</span
+										>
+									</span>
+									<span class="row">
+										<span class="col attribute">
+											Popularity<br />
+											19.7 ^</span
+										>
+										<span class="col attribute">
+											Runtime<br />
+											154 minutes ^</span
+										>
+										<span class="col attribute">
+											Average Rating <br />8.5/10 ^</span
+										>
+									</span>
 								</span>
-							</span>
+							</div>
 						</div>
 					</div>
 				</div>
