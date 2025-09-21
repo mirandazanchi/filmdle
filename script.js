@@ -230,8 +230,6 @@ const evaluateGuess = async (guessDetails, secretDetails) => {
 		return scores;
 	} else {
 		//compares each item to the secret movie's detail and returns clues
-		const guessTitle = guessDetails.title;
-
 		var scores = {};
 
 		//Year
@@ -385,12 +383,21 @@ function addHints(details) {
 	const hintDirector = document.getElementById("hintDirector");
 	const hintTagline = document.getElementById("hintTagline");
 
+	const title = details.title;
 	const actor = details.credits.cast[0].name;
 	const director = details.credits.crew.filter(
 		(crew) => crew.job == "Director"
 	)[0].name;
-	const tagline = details.tagline;
 
+	//Censor tagline if it includes the title of the secret movie
+	const originalTagline = details.tagline;
+	var tagline = "";
+	const titleRegex = new RegExp(title, "gi");
+	const titleRegexNoArts = new RegExp(removeArticle(title), "gi");
+	var tagline = originalTagline.replaceAll(titleRegex, "***");
+	var tagline = tagline.replaceAll(titleRegexNoArts, "***");
+
+	//Add listeners to each button to reveal the hint, disable buttons if the hint field is null or blank
 	if (actor != null && actor != "") {
 		hintActor.addEventListener("click", () => {
 			hintsUsed++;
@@ -417,6 +424,10 @@ function addHints(details) {
 	} else {
 		hintTagline.disabled = true;
 	}
+}
+
+function removeArticle(string) {
+	return string.replace(/^(a|an|the)\s/i, "").trim();
 }
 
 function revealSecret() {
