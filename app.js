@@ -1,24 +1,39 @@
+const express = require("express");
+const app = express();
 const http = require("http");
 const fs = require("fs");
 const port = 3000;
 
-const server = http.createServer(function (req, res) {
-	res.writeHead(200, { "Content-Type": "text / html" });
-	fs.readFile("index.html", function (err, data) {
-		if (err) {
-			res.writeHead(404);
-			res.write("Error 404");
-		} else {
-			res.write(data);
-		}
-		res.end();
-	});
+// const sass = require("sass");
+// const bootstrap = require("bootstrap");
+
+app.use(express.static("public"));
+
+app.get("/", (req, res) => {
+	res.sendFile(__dirname + "/index.html");
 });
 
-server.listen(port, function (err) {
-	if (err) {
-		console.log("An error occurred", err);
-	} else {
-		console.log("Server listening on port " + port);
-	}
+app.listen(port, () => {
+	console.log(`Example app listening on port ${port}`);
 });
+
+// const APIoptions = {
+// 	method: "GET",
+// 	headers: {
+// 		accept: "application/json",
+// 		Authorization: "Bearer " + readAccessToken,
+// 	},
+// };
+
+// async function callAPI(url) {
+// 	try {
+// 		const response = await fetch(url, APIoptions);
+// 		if (!response.ok) {
+// 			throw new Error(`Response status: ${response.status}`);
+// 		}
+// 		const json = await response.json();
+// 		return json;
+// 	} catch (error) {
+// 		console.error(error.message);
+// 	}
+// }

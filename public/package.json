@@ -1,0 +1,25 @@
+{
+	"name": "filmdle",
+	"version": "1.0.0",
+	"description": "",
+	"homepage": "https://github.com/mirandazanchi/filmdle#readme",
+	"bugs": {
+		"url": "https://github.com/mirandazanchi/filmdle/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/mirandazanchi/filmdle.git"
+	},
+	"license": "ISC",
+	"author": "",
+	"type": "commonjs",
+	"main": "app.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"dependencies": {
+		"bootstrap": "^5.3.8",
+		"express": "^5.1.0",
+		"sass": "^1.93.0"
+	}
+}
